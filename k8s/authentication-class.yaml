@@ -1,0 +1,10 @@
+apiVersion: authentication.stackable.tech/v1alpha1
+kind: AuthenticationClass
+metadata:
+  name: trino-local-auth
+  namespace: trino-simplified
+spec:
+  basic:
+    usersConfigMap:
+      name: trino-config
+      key: users.properties
