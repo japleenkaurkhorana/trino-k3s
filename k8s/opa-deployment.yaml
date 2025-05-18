@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: trino-simplified
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      containers:
+        - name: minio
+          image: minio/minio:latest
+          ports:
+            - containerPort: 9000
+            - containerPort: 9001
+          command:
+            - /bin/bash
+            - -c
+          args:
+            - minio server /data --console-address ":9001"
+          env:
+            - name: MINIO_ROOT_USER
+              value: "x00jlqcW2EMuzsk9FVs4"
+            - name: MINIO_ROOT_PASSWORD
+              value: "LdtcxOrNitCcc0j2zuqCPk5Ncb6bGd4ZLlad1mjt"
+          volumeMounts:
+            - name: minio-data
+              mountPath: /data
+      volumes:
+        - name: minio-data
+          emptyDir: {}

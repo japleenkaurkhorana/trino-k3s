@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trino
+  namespace: trino-simplified
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trino
+  template:
+    metadata:
+      labels:
+        app: trino
+    spec:
+      containers:
+        - name: trino
+          image: trinodb/trino:latest
+          ports:
+            - containerPort: 8080
+          # Add resource limits to avoid OOM issues
+          resources:
+            requests:
+              memory: "1Gi"
+            limits:
+              memory: "2Gi"
+          # Add environment variables needed by Trino
+          env:
+            - name: JAVA_OPTS
+              value: "-Xmx1G -Xms1G"
+          volumeMounts:
+            - name: trino-config
+              mountPath: /etc/trino/config.properties
+              subPath: config.properties
+            - name: trino-config
+              mountPath: /etc/trino/access-control.properties
+              subPath: access-control.properties
+            - name: trino-config
+              mountPath: /etc/trino/password-authenticator.properties
+              subPath: password-authenticator.properties
+            - name: trino-config
+              mountPath: /etc/trino/users.properties
+              subPath: users.properties
+            - name: trino-catalogs
+              mountPath: /etc/trino/catalog/s3.properties
+              subPath: s3.properties
+      volumes:
+        - name: trino-config
+          configMap:
+            name: trino-config
+        - name: trino-catalogs
+          configMap:
+            name: trino-config

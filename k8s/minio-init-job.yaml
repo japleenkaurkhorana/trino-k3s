@@ -1,0 +1,21 @@
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-init
+  namespace: trino-simplified
+spec:
+  template:
+    spec:
+      containers:
+      - name: mc
+        image: minio/mc:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          mc alias set myminio http://minio.trino-simplified.svc.cluster.local:9000 x00jlqcW2EMuzsk9FVs4 LdtcxOrNitCcc0j2zuqCPk5Ncb6bGd4ZLlad1mjt
+          mc mb --ignore-existing myminio/trino-bucket
+          echo "MinIO bucket 'trino-bucket' created or already exists"
+      restartPolicy: Never
+  backoffLimit: 2

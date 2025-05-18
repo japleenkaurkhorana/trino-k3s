@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opa-policy
+  namespace: trino-simplified
+data:
+  authz.rego: |
+    package trino.authz
+
+    import input
+
+    default allow = false
+
+    # Allow admin users to do anything
+    allow {
+        input.user == "admin"
+    }
+
+    # Allow analyst users to query specific catalogs
+    allow {
+        input.user == "analyst"
+        input.query.type == "SELECT"
+    }
